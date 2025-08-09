@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/saved_page.dart';
+import 'package:flutter_application_1/favorites_page.dart';
+import 'package:flutter_application_1/user_details_page.dart';
 
 class EcommerceHomePage extends StatefulWidget {
   const EcommerceHomePage({super.key});
@@ -14,7 +17,6 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
         child: Column(
           children: [
@@ -30,13 +32,32 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Home",
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                          Row(
+                            children: [
+                              const Text(
+                                "Home",
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Spacer(),
+                              IconButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => const UserDetailsPage(),
+                                    ),
+                                  );
+                                },
+                                icon: Icon(
+                                  Icons.person_rounded,
+                                  color: Colors.amber,
+                                ),
+                              ),
+                            ],
                           ),
                           const SizedBox(height: 16),
                           Container(
@@ -207,9 +228,21 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
+          if (index == 1) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const SavedPage()),
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const FavoritesPage()),
+            );
+          } else {
+            setState(() {
+              _selectedIndex = index;
+            });
+          }
         },
         type: BottomNavigationBarType.fixed,
         selectedItemColor: Colors.orange,
@@ -225,8 +258,8 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
             label: 'Favorites',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            label: 'Profile',
+            icon: Icon(Icons.shopping_bag),
+            label: 'Orders',
           ),
         ],
       ),
@@ -245,16 +278,16 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
         margin: const EdgeInsets.only(right: 16),
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.black : Colors.transparent,
+          color: isSelected ? Colors.blue : Colors.transparent,
           borderRadius: BorderRadius.circular(25),
           border: Border.all(
-            color: isSelected ? Colors.black : Colors.grey.shade300,
+            color: isSelected ? Colors.blue : Colors.grey.shade300,
           ),
         ),
         child: Text(
           title,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey.shade600,
+            color: isSelected ? Colors.white : Colors.black,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
           ),
         ),
