@@ -39,9 +39,7 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
-          color: Color.fromARGB(255, 243, 148, 5),
-        ),
+        decoration: const BoxDecoration(color: Colors.blue),
         child: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -189,12 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: _handleLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.white,
-                          foregroundColor: const Color.fromARGB(
-                            255,
-                            243,
-                            148,
-                            5,
-                          ),
+                          foregroundColor: Colors.blue,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(25),
                           ),
