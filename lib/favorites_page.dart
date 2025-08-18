@@ -10,7 +10,6 @@ class FavoritesPage extends StatefulWidget {
 
 class _FavoritesPageState extends State<FavoritesPage> {
   int _selectedIndex = 2;
-  String _selectedCategory = "All";
 
   @override
   Widget build(BuildContext context) {
@@ -57,18 +56,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
                                 ),
                               ),
                               const Spacer(),
-                              Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: Colors.red.withOpacity(0.1),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  Icons.favorite,
-                                  color: Colors.red,
-                                  size: 20,
-                                ),
-                              ),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -94,24 +81,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
                               ],
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Category filter
-                    SizedBox(
-                      height: 40,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        children: [
-                          _buildFilterChip("All", true),
-                          _buildFilterChip("Technology", false),
-                          _buildFilterChip("Fashion", false),
-                          _buildFilterChip("Sports", false),
-                          _buildFilterChip("Home", false),
                         ],
                       ),
                     ),
@@ -237,7 +206,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
           }
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.orange,
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -254,35 +223,6 @@ class _FavoritesPageState extends State<FavoritesPage> {
             label: 'Orders',
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildFilterChip(String label, bool isSelected) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedCategory = label;
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.red : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: isSelected ? Colors.red : Colors.grey.shade300,
-          ),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.grey.shade600,
-            fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-            fontSize: 14,
-          ),
-        ),
       ),
     );
   }
@@ -348,20 +288,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Icon(
-                        Icons.favorite,
-                        size: 20,
-                        color: Colors.red,
-                      ),
+                      Icon(Icons.favorite, size: 20, color: Colors.red),
                     ],
                   ),
                   const SizedBox(height: 4),
                   Text(
                     category,
-                    style: TextStyle(
-                      color: Colors.grey.shade600,
-                      fontSize: 12,
-                    ),
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
                   ),
                   const SizedBox(height: 4),
                   Row(
@@ -377,11 +310,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                       ),
                       Row(
                         children: [
-                          Icon(
-                            Icons.star,
-                            size: 14,
-                            color: Colors.orange,
-                          ),
+                          Icon(Icons.star, size: 14, color: Colors.orange),
                           const SizedBox(width: 4),
                           Text(
                             rating.toString(),

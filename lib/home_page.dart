@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/saved_page.dart';
 import 'package:flutter_application_1/favorites_page.dart';
+import 'package:flutter_application_1/orders_page.dart';
 import 'package:flutter_application_1/user_details_page.dart';
+import 'package:flutter_application_1/product_page.dart';
 
 class EcommerceHomePage extends StatefulWidget {
   const EcommerceHomePage({super.key});
@@ -48,13 +50,14 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const UserDetailsPage(),
+                                      builder: (context) =>
+                                          const UserDetailsPage(),
                                     ),
                                   );
                                 },
                                 icon: Icon(
                                   Icons.person_rounded,
-                                  color: Colors.amber,
+                                  color: Colors.blue,
                                 ),
                               ),
                             ],
@@ -238,6 +241,11 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
               context,
               MaterialPageRoute(builder: (context) => const FavoritesPage()),
             );
+          } else if (index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const OrdersPage()),
+            );
           } else {
             setState(() {
               _selectedIndex = index;
@@ -245,7 +253,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
           }
         },
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.orange,
+        selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
@@ -302,114 +310,157 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     Color bgColor,
     IconData icon,
   ) {
-    return Container(
-      width: 160,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.shade200,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductPage(
+              productName: title,
+              price: price,
+              shipping: shipping,
+              bgColor: bgColor,
+              icon: icon,
+            ),
           ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            height: 120,
-            decoration: BoxDecoration(
-              color: bgColor,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(12),
+        );
+      },
+      child: Container(
+        width: 160,
+        margin: const EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.shade200,
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 120,
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
+              ),
+              child: Center(
+                child: Icon(
+                  icon,
+                  size: 40,
+                  color: bgColor == Colors.grey.shade800
+                      ? Colors.white
+                      : Colors.grey.shade700,
+                ),
               ),
             ),
-            child: Center(
-              child: Icon(
-                icon,
-                size: 40,
-                color: bgColor == Colors.grey.shade800
-                    ? Colors.white
-                    : Colors.grey.shade700,
+            Padding(
+              padding: const EdgeInsets.all(12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    price,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    shipping,
+                    style: TextStyle(
+                      color: Colors.green.shade600,
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(12),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  price,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  shipping,
-                  style: TextStyle(color: Colors.green.shade600, fontSize: 12),
-                ),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _buildRecentlyViewedCard(Color bgColor, IconData icon) {
-    return Container(
-      width: 100,
-      height: 100,
-      margin: const EdgeInsets.only(right: 16),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Stack(
-        children: [
-          Center(
-            child: Icon(
-              icon,
-              size: 32,
-              color: bgColor == Colors.grey.shade800
-                  ? Colors.white
-                  : Colors.grey.shade700,
+    // Generate product name based on icon
+    String productName = icon == Icons.laptop
+        ? "Gaming Laptop"
+        : icon == Icons.speaker
+        ? "Bluetooth Speaker"
+        : "Product";
+    String price = icon == Icons.laptop ? "\$ 25,999" : "\$ 2,999";
+
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductPage(
+              productName: productName,
+              price: price,
+              shipping: "Free shipping",
+              bgColor: bgColor,
+              icon: icon,
             ),
           ),
-          Positioned(
-            top: 8,
-            right: 8,
-            child: Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.9),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.favorite_border,
-                size: 12,
-                color: Colors.grey,
+        );
+      },
+      child: Container(
+        width: 100,
+        height: 100,
+        margin: const EdgeInsets.only(right: 16),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Stack(
+          children: [
+            Center(
+              child: Icon(
+                icon,
+                size: 32,
+                color: bgColor == Colors.grey.shade800
+                    ? Colors.white
+                    : Colors.grey.shade700,
               ),
             ),
-          ),
-        ],
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.9),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.favorite_border,
+                  size: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
