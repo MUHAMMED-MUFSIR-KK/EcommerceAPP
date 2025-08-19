@@ -47,14 +47,10 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.amber.shade100,
-                    border: Border.all(color: Colors.amber, width: 3),
+                    color: Colors.white,
+                    border: Border.all(color: Colors.blue, width: 3),
                   ),
-                  child: const Icon(
-                    Icons.person,
-                    size: 60,
-                    color: Colors.amber,
-                  ),
+                  child: const Icon(Icons.person, size: 60, color: Colors.blue),
                 ),
 
                 const SizedBox(height: 24),
@@ -118,9 +114,9 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   width: double.infinity,
                   height: 50,
                   decoration: BoxDecoration(
-                    color: Colors.red.shade50,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red.shade300),
+                    border: Border.all(color: Colors.blue),
                   ),
                   child: TextButton(
                     onPressed: () {
@@ -129,7 +125,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                     child: Text(
                       "Logout",
                       style: TextStyle(
-                        color: Colors.red.shade700,
+                        color: Colors.blue,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
@@ -259,10 +255,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   MaterialPageRoute(builder: (context) => const LoginPage()),
                 );
               },
-              child: Text(
-                "Logout",
-                style: TextStyle(color: Colors.red.shade700),
-              ),
+              child: Text("Logout", style: TextStyle(color: Colors.blue)),
             ),
           ],
         );
