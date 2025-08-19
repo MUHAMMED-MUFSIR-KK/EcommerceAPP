@@ -98,16 +98,6 @@ class CyberLinioPage extends StatelessWidget {
                     const SizedBox(height: 20),
 
                     // Bottom indicator
-                    Container(
-                      width: 60,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
                   ],
                 ),
               ),
