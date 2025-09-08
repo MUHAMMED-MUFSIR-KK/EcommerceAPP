@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/favorites_page.dart';
+import 'package:flutter_application_1/screen/pages/saved_page.dart';
 
-class SavedPage extends StatefulWidget {
-  const SavedPage({super.key});
+class FavoritesPage extends StatefulWidget {
+  const FavoritesPage({super.key});
 
   @override
-  State<SavedPage> createState() => _SavedPageState();
+  State<FavoritesPage> createState() => _FavoritesPageState();
 }
 
-class _SavedPageState extends State<SavedPage> {
-  int _selectedIndex = 1;
+class _FavoritesPageState extends State<FavoritesPage> {
+  int _selectedIndex = 2;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+      backgroundColor: const Color(0xFFF5F5F5),
       body: SafeArea(
         child: Column(
           children: [
@@ -48,13 +48,14 @@ class _SavedPageState extends State<SavedPage> {
                                 ),
                               ),
                               const Text(
-                                "Saved Items",
+                                "My Favorites",
                                 style: TextStyle(
                                   fontSize: 28,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                 ),
                               ),
+                              const Spacer(),
                             ],
                           ),
                           const SizedBox(height: 16),
@@ -71,7 +72,7 @@ class _SavedPageState extends State<SavedPage> {
                                 const Expanded(
                                   child: TextField(
                                     decoration: InputDecoration(
-                                      hintText: "Search saved items",
+                                      hintText: "Search favorites",
                                       border: InputBorder.none,
                                       hintStyle: TextStyle(color: Colors.grey),
                                     ),
@@ -92,7 +93,7 @@ class _SavedPageState extends State<SavedPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            "All Saved Items",
+                            "Favorite Products",
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
@@ -105,13 +106,13 @@ class _SavedPageState extends State<SavedPage> {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.blue.withOpacity(0.1),
+                              color: Colors.red.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(15),
                             ),
                             child: Text(
-                              "12 items",
+                              "8 items",
                               style: TextStyle(
-                                color: Colors.blue,
+                                color: Colors.red,
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                               ),
@@ -123,66 +124,60 @@ class _SavedPageState extends State<SavedPage> {
 
                     const SizedBox(height: 20),
 
+                    // Favorites list
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: GridView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          childAspectRatio: 0.65,
-                          crossAxisSpacing: 16,
-                          mainAxisSpacing: 16,
-                        ),
-                        itemCount: 6,
-                        itemBuilder: (context, index) {
-                          return _buildSavedItemCard(
-                            index == 0
-                                ? "MacBook Air M1"
-                                : index == 1
-                                    ? "Sony WH1000XM5"
-                                    : index == 2
-                                        ? "Smart Watch"
-                                        : index == 3
-                                            ? "Nike Air Max"
-                                            : index == 4
-                                                ? "Summer Dress"
-                                                : "Basketball",
-                            index == 0
-                                ? "\$ 39,999"
-                                : index == 1
-                                    ? "\$ 4,999"
-                                    : index == 2
-                                        ? "\$ 1,099"
-                                        : index == 3
-                                            ? "\$ 2,499"
-                                            : index == 4
-                                                ? "\$ 899"
-                                                : "\$ 299",
-                            index == 0
-                                ? Colors.blue.shade100
-                                : index == 1
-                                    ? Colors.grey.shade800
-                                    : index == 2
-                                        ? Colors.red.shade100
-                                        : index == 3
-                                            ? Colors.green.shade100
-                                            : index == 4
-                                                ? Colors.purple.shade100
-                                                : Colors.orange.shade100,
-                            index == 0
-                                ? Icons.laptop_mac
-                                : index == 1
-                                    ? Icons.headphones
-                                    : index == 2
-                                        ? Icons.watch
-                                        : index == 3
-                                            ? Icons.sports_soccer
-                                            : index == 4
-                                                ? Icons.checkroom
-                                                : Icons.sports_basketball,
-                          );
-                        },
+                      child: Column(
+                        children: [
+                          _buildFavoriteItem(
+                            "iPhone 15 Pro Max",
+                            "\$ 49,999",
+                            "Technology",
+                            Colors.blue.shade100,
+                            Icons.phone_iphone,
+                            4.8,
+                          ),
+                          _buildFavoriteItem(
+                            "Nike Air Jordan",
+                            "\$ 3,499",
+                            "Fashion",
+                            Colors.red.shade100,
+                            Icons.sports_basketball,
+                            4.7,
+                          ),
+                          _buildFavoriteItem(
+                            "Samsung 65\" TV",
+                            "\$ 25,999",
+                            "Technology",
+                            Colors.purple.shade100,
+                            Icons.tv,
+                            4.6,
+                          ),
+                          _buildFavoriteItem(
+                            "Yoga Mat Premium",
+                            "\$ 599",
+                            "Sports",
+                            Colors.green.shade100,
+                            Icons.fitness_center,
+                            4.5,
+                          ),
+                          _buildFavoriteItem(
+                            "Designer Handbag",
+                            "\$ 8,999",
+                            "Fashion",
+                            Colors.pink.shade100,
+                            Icons.shopping_bag,
+                            4.9,
+                          ),
+                          _buildFavoriteItem(
+                            "Gaming Console",
+                            "\$ 15,999",
+                            "Technology",
+                            Colors.orange.shade100,
+                            Icons.sports_esports,
+                            4.8,
+                          ),
+                        ],
                       ),
                     ),
 
@@ -199,29 +194,28 @@ class _SavedPageState extends State<SavedPage> {
         onTap: (index) {
           if (index == 0) {
             Navigator.pop(context);
-          } else if (index == 2) {
+          } else if (index == 1) {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => const FavoritesPage()),
+              MaterialPageRoute(builder: (context) => const SavedPage()),
             );
-          } else if (index != 1) {
+          } else if (index != 2) {
             setState(() {
               _selectedIndex = index;
             });
           }
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(
-            icon: Icon(Icons.bookmark),
+            icon: Icon(Icons.bookmark_border),
             label: 'Saved',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite_border),
+            icon: Icon(Icons.favorite),
             label: 'Favorites',
           ),
           BottomNavigationBarItem(
@@ -233,13 +227,16 @@ class _SavedPageState extends State<SavedPage> {
     );
   }
 
-  Widget _buildSavedItemCard(
+  Widget _buildFavoriteItem(
     String title,
     String price,
+    String category,
     Color bgColor,
     IconData icon,
+    double rating,
   ) {
     return Container(
+      margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
@@ -251,105 +248,104 @@ class _SavedPageState extends State<SavedPage> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Stack(
-            children: [
-              Container(
-                height: 120,
-                decoration: BoxDecoration(
-                  color: bgColor,
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(12),
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    icon,
-                    size: 36,
-                    color: bgColor == Colors.grey.shade800
-                        ? Colors.white
-                        : Colors.grey.shade700,
-                  ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          children: [
+            Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: bgColor,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Center(
+                child: Icon(
+                  icon,
+                  size: 32,
+                  color: bgColor == Colors.grey.shade800
+                      ? Colors.white
+                      : Colors.grey.shade700,
                 ),
               ),
-              Positioned(
-                top: 8,
-                right: 8,
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ],
-                  ),
-                  child: Icon(
-                    Icons.bookmark,
-                    size: 18,
-                    color: Colors.blue,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(10),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        title,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13,
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 15,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 2),
+                      Icon(Icons.favorite, size: 20, color: Colors.red),
+                    ],
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    category,
+                    style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                  ),
+                  const SizedBox(height: 4),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
                       Text(
                         price,
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 15,
+                          fontSize: 17,
                           color: Colors.black87,
                         ),
                       ),
+                      Row(
+                        children: [
+                          Icon(Icons.star, size: 14, color: Colors.orange),
+                          const SizedBox(width: 4),
+                          Text(
+                            rating.toString(),
+                            style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
                       Icon(
-                        Icons.star,
-                        size: 12,
-                        color: Colors.blue,
+                        Icons.local_shipping,
+                        size: 14,
+                        color: Colors.green.shade600,
                       ),
-                      const SizedBox(width: 2),
+                      const SizedBox(width: 4),
                       Text(
-                        "4.5",
+                        "Free shipping",
                         style: TextStyle(
-                          color: Colors.grey.shade600,
-                          fontSize: 11,
+                          color: Colors.green.shade600,
+                          fontSize: 12,
                         ),
                       ),
                       const Spacer(),
                       Text(
-                        "Free ship",
+                        "In stock",
                         style: TextStyle(
-                          color: Colors.green.shade600,
-                          fontSize: 10,
+                          color: Colors.blue.shade600,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
                     ],
@@ -357,8 +353,8 @@ class _SavedPageState extends State<SavedPage> {
                 ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

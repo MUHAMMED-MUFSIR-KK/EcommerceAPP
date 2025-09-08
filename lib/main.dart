@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/opening_page.dart';
+import 'package:flutter_application_1/screen/pages/login_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: CyberLinioPage(),
+      home: LoginPage(),
     );
   }
 }
