@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/saved_page.dart';
-import 'package:flutter_application_1/favorites_page.dart';
-import 'package:flutter_application_1/orders_page.dart';
-import 'package:flutter_application_1/user_details_page.dart';
-import 'package:flutter_application_1/product_page.dart';
+import 'package:flutter_application_1/screen/pages/saved_page.dart';
+import 'package:flutter_application_1/screen/pages/favorites_page.dart';
+import 'package:flutter_application_1/screen/pages/orders_page.dart';
+import 'package:flutter_application_1/screen/pages/user_details_page.dart';
+import 'package:flutter_application_1/screen/pages/product_page.dart';
 
 class EcommerceHomePage extends StatefulWidget {
   const EcommerceHomePage({super.key});

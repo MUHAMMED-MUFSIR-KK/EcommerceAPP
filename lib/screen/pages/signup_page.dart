@@ -1,31 +1,76 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/home_page.dart';
+import 'package:flutter_application_1/controller/auth.dart';
+import 'package:flutter_application_1/screen/pages/login_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignUpPageState extends State<SignUpPage> {
+  final auth = AuthController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isConfirmPasswordVisible = false;
   final _formKey = GlobalKey<FormState>();
 
-  void _handleLogin() {
-    final email = _emailController.text.trim();
-    final password = _passwordController.text.trim();
-    if (_formKey.currentState!.validate() == true) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => const EcommerceHomePage()),
+  Future<void> _handleSignUp() async {
+    if (!_formKey.currentState!.validate()) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Center(
+            child: Text(
+              'Please fill all fields correctly',
+              style: TextStyle(color: Colors.red),
+            ),
+          ),
+          backgroundColor: Colors.white,
+        ),
       );
+      return;
     }
 
-    if (email.isEmpty || password.isEmpty) {
-      return;
+    final username = _usernameController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    final result = await auth.userRegister(username, password, email);
+
+    if (result != null && result['success'] == true) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Center(
+            child: Text(
+              result['message'] ?? 'Registration successful',
+              style: const TextStyle(color: Colors.green),
+            ),
+          ),
+          backgroundColor: Colors.white,
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Center(
+            child: Text(
+              result?['message'] ?? 'Registration failed. Please try again.',
+              style: const TextStyle(color: Colors.red),
+            ),
+          ),
+          backgroundColor: Colors.white,
+        ),
+      );
     }
   }
 
@@ -55,11 +100,11 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
 
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
 
                   // Title
                   const Text(
-                    "Welcome Back",
+                    "Create Account",
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -70,11 +115,45 @@ class _LoginPageState extends State<LoginPage> {
                   const SizedBox(height: 8),
 
                   const Text(
-                    "Sign in to your MS STORE account",
+                    "Sign up for your MS STORE account",
                     style: TextStyle(fontSize: 16, color: Colors.white70),
                   ),
 
-                  const SizedBox(height: 60),
+                  const SizedBox(height: 50),
+
+                  // Username field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.white.withOpacity(0.3)),
+                    ),
+                    child: TextFormField(
+                      controller: _usernameController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a username';
+                        }
+                        if (value.length < 3) {
+                          return 'Username must be at least 3 characters';
+                        }
+                        return null;
+                      },
+                      style: const TextStyle(color: Colors.white),
+                      decoration: const InputDecoration(
+                        labelText: 'Username',
+                        labelStyle: TextStyle(color: Colors.white70),
+                        prefixIcon: Icon(Icons.person, color: Colors.white70),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
 
                   // Email field
                   Container(
@@ -85,6 +164,16 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     child: TextFormField(
                       controller: _emailController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please enter your email";
+                        }
+                        final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
+                        if (!emailRegex.hasMatch(value)) {
+                          return "Please enter a valid email address";
+                        }
+                        return null;
+                      },
                       style: const TextStyle(color: Colors.white),
                       decoration: const InputDecoration(
                         labelText: 'Email',
@@ -112,10 +201,11 @@ class _LoginPageState extends State<LoginPage> {
                     child: TextFormField(
                       controller: _passwordController,
                       validator: (value) {
-                        if (value == null) {
-                          return "please enter your password";
-                        } else if (value.length == 6) {
-                          return "please enter 6 number dight";
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a password';
+                        }
+                        if (value.length < 6) {
+                          return 'Password must be at least 6 characters';
                         }
                         return null;
                       },
@@ -150,30 +240,66 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
-                  // Forgot Password
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: TextButton(
-                      onPressed: () {
-                        // Handle forgot password
+                  // Confirm Password field
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(15),
+                      border: Border.all(color: Colors.white.withOpacity(0.3)),
+                    ),
+                    child: TextFormField(
+                      controller: _confirmPasswordController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please confirm your password';
+                        }
+                        if (value != _passwordController.text) {
+                          return 'Passwords do not match';
+                        }
+                        return null;
                       },
-                      child: const Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.white70, fontSize: 14),
+                      style: const TextStyle(color: Colors.white),
+                      obscureText: !_isConfirmPasswordVisible,
+                      decoration: InputDecoration(
+                        labelText: 'Confirm Password',
+                        labelStyle: const TextStyle(color: Colors.white70),
+                        prefixIcon: const Icon(
+                          Icons.lock_outline,
+                          color: Colors.white70,
+                        ),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isConfirmPasswordVisible
+                                ? Icons.visibility
+                                : Icons.visibility_off,
+                            color: Colors.white70,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _isConfirmPasswordVisible =
+                                  !_isConfirmPasswordVisible;
+                            });
+                          },
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20,
+                          vertical: 16,
+                        ),
                       ),
                     ),
                   ),
 
                   const SizedBox(height: 40),
 
-                  // Login button
+                  // Sign Up button
                   SizedBox(
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: _handleLogin,
+                      onPressed: _handleSignUp,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.blue,
@@ -183,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                         elevation: 0,
                       ),
                       child: const Text(
-                        "LOG IN",
+                        "SIGN UP",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -221,20 +347,25 @@ class _LoginPageState extends State<LoginPage> {
 
                   const SizedBox(height: 30),
 
-                  // Sign up text
+                  // Sign in text
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       const Text(
-                        "Don't have an account? ",
+                        "Already have an account? ",
                         style: TextStyle(color: Colors.white70, fontSize: 14),
                       ),
                       TextButton(
                         onPressed: () {
-                          // Handle sign up
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LoginPage(),
+                            ),
+                          );
                         },
                         child: const Text(
-                          'Sign Up',
+                          'Sign In',
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: 14,
@@ -257,8 +388,10 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
+    _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 }
