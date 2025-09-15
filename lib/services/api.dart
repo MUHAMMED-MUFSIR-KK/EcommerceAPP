@@ -75,15 +75,22 @@ class Api {
       );
       print("Response received: ${response.statusCode}");
       print("Response data: ${response.data}");
-      
+
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return response.data ?? {"success": true, "message": "Password reset link sent to your email"};
+        return response.data ??
+            {
+              "success": true,
+              "message": "Password reset link sent to your email",
+            };
       } else {
         return {"success": false, "message": "Failed to send reset link"};
       }
     } catch (e) {
       print("error $e");
-      return {"success": false, "message": "Failed to send reset link: ${e.toString()}"};
+      return {
+        "success": false,
+        "message": "Failed to send reset link: ${e.toString()}",
+      };
     }
   }
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/screen/pages/login_page.dart';
+import 'package:flutter_application_1/controller/auth.dart';
 
 class UserDetailsPage extends StatefulWidget {
   const UserDetailsPage({super.key});
@@ -9,6 +10,39 @@ class UserDetailsPage extends StatefulWidget {
 }
 
 class _UserDetailsPageState extends State<UserDetailsPage> {
+  final AuthController _auth = AuthController();
+  Map<String, String> _userProfile = {'username': 'Loading...', 'email': 'Loading...', 'id': '0'};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final profile = await _auth.getUserProfile();
+      setState(() {
+        _userProfile = profile;
+      });
+    } catch (e) {
+      print("Error loading user profile: $e");
+    }
+  }
+
+  Future<void> _logout() async {
+    try {
+      await _auth.clearSavedLoginData();
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+        (route) => false,
+      );
+    } catch (e) {
+      print("Error during logout: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,13 +106,13 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
                   ),
                   child: Column(
                     children: [
-                      _buildInfoRow("Name", "John Doe"),
+                      _buildInfoRow("Username", _userProfile['username'] ?? 'Unknown'),
                       const SizedBox(height: 16),
-                      _buildInfoRow("Email", "john.doe@example.com"),
+                      _buildInfoRow("Email", _userProfile['email'] ?? 'No email'),
                       const SizedBox(height: 16),
-                      _buildInfoRow("Phone", "+1 (555) 123-4567"),
+                      _buildInfoRow("User ID", _userProfile['id'] ?? '0'),
                       const SizedBox(height: 16),
-                      _buildInfoRow("Location", "New York, USA"),
+                      _buildInfoRow("Status", "Active"),
                     ],
                   ),
                 ),
@@ -250,10 +284,7 @@ class _UserDetailsPageState extends State<UserDetailsPage> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginPage()),
-                );
+                _logout();
               },
               child: Text("Logout", style: TextStyle(color: Colors.blue)),
             ),
