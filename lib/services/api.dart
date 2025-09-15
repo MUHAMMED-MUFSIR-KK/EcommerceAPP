@@ -93,4 +93,27 @@ class Api {
       };
     }
   }
+
+  Future<Map<String, dynamic>> getProducts() async {
+    try {
+      print("getProducts .....................");
+      print("Attempting to connect to: $baseUrl/products");
+
+      final response = await dio.get("/products");
+      print("Response received getProducts : ${response.statusCode}");
+      print("Response data getProducts : ${response.data}");
+
+      if (response.statusCode == 200) {
+        return response.data;
+      } else {
+        return {"success": false, "message": "Failed to load products"};
+      }
+    } catch (e) {
+      print("error $e");
+      return {
+        "success": false,
+        "message": "Failed to load products: ${e.toString()}",
+      };
+    }
+  }
 }

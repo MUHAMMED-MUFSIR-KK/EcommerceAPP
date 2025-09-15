@@ -5,6 +5,8 @@ import 'package:flutter_application_1/screen/pages/orders_page.dart';
 import 'package:flutter_application_1/screen/pages/user_details_page.dart';
 import 'package:flutter_application_1/screen/pages/product_page.dart';
 import 'package:flutter_application_1/controller/auth.dart';
+import 'package:flutter_application_1/controller/products_controller.dart';
+import 'package:flutter_application_1/model/product_model.dart';
 
 class EcommerceHomePage extends StatefulWidget {
   const EcommerceHomePage({super.key});
@@ -17,15 +19,20 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
   int _selectedIndex = 0;
   int _selectedCategoryIndex = -1;
   final AuthController _auth = AuthController();
+  final ProductsController _productsController = ProductsController();
   Map<String, String> _userProfile = {
     'username': 'Loading...',
     'email': 'Loading...',
   };
+  List<Product> _products = [];
+  List<Product> _filteredProducts = [];
+  bool _isLoadingProducts = false;
 
   @override
   void initState() {
     super.initState();
     _loadUserProfile();
+    _loadProducts();
   }
 
   Future<void> _loadUserProfile() async {
@@ -37,6 +44,54 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     } catch (e) {
       print("Error loading user profile: $e");
     }
+  }
+
+  Future<void> _loadProducts() async {
+    print("HomePage: Starting to load products");
+    setState(() {
+      _isLoadingProducts = true;
+    });
+
+    try {
+      print("HomePage: Calling products controller");
+      final products = await _productsController.getProducts();
+      print("HomePage: Received ${products.length} products from controller");
+      if (products.isNotEmpty) {
+        print("HomePage: First product name: ${products.first.name}");
+      }
+      setState(() {
+        _products = products;
+        _filteredProducts = products;
+        _isLoadingProducts = false;
+      });
+      print(
+        "HomePage: State updated - _products.length: ${_products.length}, _filteredProducts.length: ${_filteredProducts.length}, _isLoadingProducts: $_isLoadingProducts",
+      );
+    } catch (e) {
+      print("HomePage: Error loading products: $e");
+      setState(() {
+        _isLoadingProducts = false;
+      });
+    }
+  }
+
+  void _filterProductsByCategory(int categoryIndex) {
+    final categories = ["Technology", "Fashion", "Sports", "Supermarket"];
+
+    setState(() {
+      _selectedCategoryIndex = categoryIndex;
+      if (categoryIndex == -1) {
+        _filteredProducts = _products;
+      } else {
+        final categoryName = categories[categoryIndex];
+        _filteredProducts = _products
+            .where(
+              (product) =>
+                  product.category.toLowerCase() == categoryName.toLowerCase(),
+            )
+            .toList();
+      }
+    });
   }
 
   @override
@@ -131,6 +186,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                         scrollDirection: Axis.horizontal,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         children: [
+                          _buildCategoryTab("All", -1),
                           _buildCategoryTab("Technology", 0),
                           _buildCategoryTab("Fashion", 1),
                           _buildCategoryTab("Sports", 2),
@@ -171,33 +227,29 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                     // Product grid
                     SizedBox(
                       height: 220,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        children: [
-                          _buildProductCard(
-                            "MacBook Air M1",
-                            "\$ 39,999",
-                            "Free shipping",
-                            Colors.blue.shade100,
-                            Icons.laptop_mac,
-                          ),
-                          _buildProductCard(
-                            "Sony WH1000XM5",
-                            "\$ 4,999",
-                            "Free shipping",
-                            Colors.grey.shade800,
-                            Icons.headphones,
-                          ),
-                          _buildProductCard(
-                            "Perfection H3 smart",
-                            "\$ 1,099",
-                            "Free shipping",
-                            Colors.red.shade100,
-                            Icons.watch,
-                          ),
-                        ],
-                      ),
+                      child: _isLoadingProducts
+                          ? const Center(child: CircularProgressIndicator())
+                          : _filteredProducts.isEmpty
+                          ? const Center(
+                              child: Text(
+                                "No products found",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            )
+                          : ListView.builder(
+                              scrollDirection: Axis.horizontal,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 16,
+                              ),
+                              itemCount: _filteredProducts.length,
+                              itemBuilder: (context, index) {
+                                final product = _filteredProducts[index];
+                                return _buildProductCardFromAPI(product);
+                              },
+                            ),
                     ),
 
                     const SizedBox(height: 24),
@@ -293,9 +345,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     bool isSelected = _selectedCategoryIndex == categoryIndex;
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _selectedCategoryIndex = categoryIndex;
-        });
+        _filterProductsByCategory(categoryIndex);
       },
       child: Container(
         margin: const EdgeInsets.only(right: 16),
@@ -318,98 +368,76 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
     );
   }
 
-  Widget _buildProductCard(
-    String title,
-    String price,
-    String shipping,
-    Color bgColor,
-    IconData icon,
-  ) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductPage(
-              productName: title,
-              price: price,
-              shipping: shipping,
-              bgColor: bgColor,
-              icon: icon,
+  Widget _buildProductCardFromAPI(Product product) {
+    return Container(
+      width: 160,
+      margin: const EdgeInsets.only(right: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Container(color: Colors.purpleAccent),
+          _buildProductCard(product.name, product.price.toString()),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProductCard(String title, String price) {
+    return Container(
+      width: 160,
+      margin: const EdgeInsets.only(right: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.shade200,
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(height: 120, color: Colors.blue),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w600,
+                    fontSize: 14,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  price,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const SizedBox(height: 4),
+              ],
             ),
           ),
-        );
-      },
-      child: Container(
-        width: 160,
-        margin: const EdgeInsets.only(right: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade200,
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              height: 120,
-              decoration: BoxDecoration(
-                color: bgColor,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(12),
-                ),
-              ),
-              child: Center(
-                child: Icon(
-                  icon,
-                  size: 40,
-                  color: bgColor == Colors.grey.shade800
-                      ? Colors.white
-                      : Colors.grey.shade700,
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    price,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    shipping,
-                    style: TextStyle(
-                      color: Colors.green.shade600,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -478,5 +506,35 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
         ),
       ),
     );
+  }
+
+  IconData _getProductIcon(String category) {
+    switch (category.toLowerCase()) {
+      case 'technology':
+        return Icons.laptop_mac;
+      case 'fashion':
+        return Icons.shopping_bag;
+      case 'sports':
+        return Icons.sports_soccer;
+      case 'supermarket':
+        return Icons.local_grocery_store;
+      default:
+        return Icons.shopping_cart;
+    }
+  }
+
+  Color _getProductColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'technology':
+        return Colors.blue.shade100;
+      case 'fashion':
+        return Colors.purple.shade100;
+      case 'sports':
+        return Colors.green.shade100;
+      case 'supermarket':
+        return Colors.orange.shade100;
+      default:
+        return Colors.grey.shade100;
+    }
   }
 }
