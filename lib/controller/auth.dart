@@ -31,27 +31,32 @@ class AuthController {
           // Extract user data from the API response and convert to compatible format
           final userData = response['data']?['user'] ?? {};
           final token = response['data']?['token'] ?? '';
-          
+
           final compatibleResponse = {
             'success': true,
             'message': response['message'] ?? 'Login successful',
             'data': {
               'token': token,
               'user': {
-                'id': userData['id']?.toString() ?? '1', // Convert number to string
-                'createdAt': userData['createdAt'] ?? DateTime.now().toIso8601String(),
-                'updatedAt': userData['updatedAt'] ?? DateTime.now().toIso8601String(),
+                'id':
+                    userData['id']?.toString() ??
+                    '1', // Convert number to string
+                'createdAt':
+                    userData['createdAt'] ?? DateTime.now().toIso8601String(),
+                'updatedAt':
+                    userData['updatedAt'] ?? DateTime.now().toIso8601String(),
                 'username': userData['username'] ?? email.split('@')[0],
                 'email': userData['email'] ?? email,
                 'isActive': userData['isActive'] ?? true,
                 'lastLogin': userData['lastLogin'],
               },
             },
-            'timestamp': response['timestamp'] ?? DateTime.now().toIso8601String(),
+            'timestamp':
+                response['timestamp'] ?? DateTime.now().toIso8601String(),
           };
 
           print("AuthController: Compatible response: $compatibleResponse");
-          
+
           try {
             final loginResponse = LoginResponse.fromJson(compatibleResponse);
             print(
@@ -59,8 +64,12 @@ class AuthController {
             );
             return loginResponse;
           } catch (parseError) {
-            print("AuthController: Error parsing compatible response: $parseError");
-            print("AuthController: Compatible response was: $compatibleResponse");
+            print(
+              "AuthController: Error parsing compatible response: $parseError",
+            );
+            print(
+              "AuthController: Compatible response was: $compatibleResponse",
+            );
             return null;
           }
         } else {
@@ -95,12 +104,17 @@ class AuthController {
               'token': '', // API doesn't return token in this format
               'user': {
                 'id': userData['id']?.toString() ?? '1',
-                'createdAt': userData['createdAt'] ?? DateTime.now().toIso8601String(),
-                'updatedAt': userData['updatedAt'] ?? userData['createdAt'] ?? DateTime.now().toIso8601String(),
+                'createdAt':
+                    userData['createdAt'] ?? DateTime.now().toIso8601String(),
+                'updatedAt':
+                    userData['updatedAt'] ??
+                    userData['createdAt'] ??
+                    DateTime.now().toIso8601String(),
                 'username': userData['username'] ?? '',
                 'email': userData['email'] ?? '',
                 'isActive': true, // Default to true
-                'lastLogin': userData['lastLoginAt'], // Map lastLoginAt to lastLogin
+                'lastLogin':
+                    userData['lastLoginAt'], // Map lastLoginAt to lastLogin
               },
             },
             'timestamp': DateTime.now().toIso8601String(),
@@ -115,7 +129,9 @@ class AuthController {
             );
             return loginResponse;
           } catch (parseError) {
-            print("AuthController: Error parsing converted response: $parseError");
+            print(
+              "AuthController: Error parsing converted response: $parseError",
+            );
             return null;
           }
         } else {
@@ -127,8 +143,12 @@ class AuthController {
             );
             return loginResponse;
           } catch (parseError) {
-            print("AuthController: Error parsing fallback response: $parseError");
-            print("AuthController: Response structure: ${response.keys.toList()}");
+            print(
+              "AuthController: Error parsing fallback response: $parseError",
+            );
+            print(
+              "AuthController: Response structure: ${response.keys.toList()}",
+            );
             return null;
           }
         }
@@ -149,7 +169,10 @@ class AuthController {
   }
 
   // Method to get raw login response without parsing
-  Future<Map<String, dynamic>?> getRawLoginResponse(String email, String password) async {
+  Future<Map<String, dynamic>?> getRawLoginResponse(
+    String email,
+    String password,
+  ) async {
     try {
       print("AuthController: Getting raw login response");
       final response = await _api.userLogin(email, password);
@@ -165,10 +188,10 @@ class AuthController {
   Future<void> saveLoginResponse(Map<String, dynamic> response) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      
+
       // Save the entire response
       await prefs.setString('login_response', jsonEncode(response));
-      
+
       // Save individual useful fields
       if (response['data'] != null) {
         final data = response['data'];
@@ -179,10 +202,13 @@ class AuthController {
           await prefs.setString('user_data', jsonEncode(data['user']));
         }
       }
-      
+
       // Save login timestamp
-      await prefs.setString('login_timestamp', DateTime.now().toIso8601String());
-      
+      await prefs.setString(
+        'login_timestamp',
+        DateTime.now().toIso8601String(),
+      );
+
       print("AuthController: Login response saved successfully");
     } catch (e) {
       print("AuthController: Error saving login response: $e");
@@ -241,18 +267,10 @@ class AuthController {
           'id': userData['id']?.toString() ?? '0',
         };
       }
-      return {
-        'username': 'Unknown User',
-        'email': 'No Email',
-        'id': '0',
-      };
+      return {'username': 'Unknown User', 'email': 'No Email', 'id': '0'};
     } catch (e) {
       print("AuthController: Error getting user profile: $e");
-      return {
-        'username': 'Unknown User',
-        'email': 'No Email',
-        'id': '0',
-      };
+      return {'username': 'Unknown User', 'email': 'No Email', 'id': '0'};
     }
   }
 
