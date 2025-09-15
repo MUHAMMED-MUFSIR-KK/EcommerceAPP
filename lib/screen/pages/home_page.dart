@@ -4,6 +4,7 @@ import 'package:flutter_application_1/screen/pages/favorites_page.dart';
 import 'package:flutter_application_1/screen/pages/orders_page.dart';
 import 'package:flutter_application_1/screen/pages/user_details_page.dart';
 import 'package:flutter_application_1/screen/pages/product_page.dart';
+import 'package:flutter_application_1/controller/auth.dart';
 
 class EcommerceHomePage extends StatefulWidget {
   const EcommerceHomePage({super.key});
@@ -15,6 +16,28 @@ class EcommerceHomePage extends StatefulWidget {
 class _EcommerceHomePageState extends State<EcommerceHomePage> {
   int _selectedIndex = 0;
   int _selectedCategoryIndex = -1;
+  final AuthController _auth = AuthController();
+  Map<String, String> _userProfile = {
+    'username': 'Loading...',
+    'email': 'Loading...',
+  };
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserProfile();
+  }
+
+  Future<void> _loadUserProfile() async {
+    try {
+      final profile = await _auth.getUserProfile();
+      setState(() {
+        _userProfile = profile;
+      });
+    } catch (e) {
+      print("Error loading user profile: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,14 +59,6 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                         children: [
                           Row(
                             children: [
-                              const Text(
-                                "Home",
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
                               Spacer(),
                               IconButton(
                                 onPressed: () {
@@ -55,7 +70,7 @@ class _EcommerceHomePageState extends State<EcommerceHomePage> {
                                     ),
                                   );
                                 },
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.person_rounded,
                                   color: Colors.blue,
                                 ),

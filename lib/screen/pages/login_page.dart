@@ -41,21 +41,80 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final result = await auth.userLogin(email, password);
-
-    if (result != null && result.success) {
-      // Navigate to home page immediately after successful login
+    print("Starting login process...");
+    
+    // Temporary bypass for testing - remove this when API is working
+    if (email == "test@test.com" && password == "123456") {
+      print("Using test credentials - bypassing API");
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const EcommerceHomePage()),
       );
+      return;
+    }
+    
+    // Try direct API call first to check the raw response
+    try {
+      final rawResponse = await auth.getRawLoginResponse(email, password);
+      print("Raw API response: $rawResponse");
+      
+      if (rawResponse != null && rawResponse['success'] == true) {
+        print("Login successful based on raw response! Navigating to home page...");
+        
+        // Save the response data to shared preferences or local storage
+        await auth.saveLoginResponse(rawResponse);
+        
+        // Navigate to home page immediately
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const EcommerceHomePage()),
+        );
+        print("Navigation completed");
+        return;
+      }
+    } catch (e) {
+      print("Raw response check failed: $e");
+    }
+    
+    // Fallback to original method
+    final result = await auth.userLogin(email, password);
+    print("Login result: $result");
+
+    if (result != null) {
+      print("Result is not null");
+      print("Success value: ${result.success}");
+      print("Message: ${result.message}");
+      
+      if (result.success) {
+        print("Login successful! Navigating to home page...");
+        // Navigate to home page immediately after successful login
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const EcommerceHomePage()),
+        );
+        print("Navigation completed");
+      } else {
+        print("Login failed with message: ${result.message}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(
+              child: Text(
+                result.message,
+                style: const TextStyle(color: Colors.red),
+              ),
+            ),
+            backgroundColor: Colors.white,
+          ),
+        );
+      }
     } else {
+      print("Result is null - login failed");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content: Center(
             child: Text(
-              result?.message ?? 'Login failed. Please try again.',
-              style: const TextStyle(color: Colors.red),
+              'Login failed. Please try again.',
+              style: TextStyle(color: Colors.red),
             ),
           ),
           backgroundColor: Colors.white,
